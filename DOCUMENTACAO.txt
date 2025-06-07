@@ -1,0 +1,241 @@
+
+=================================================================================
+                            PEDINDOAPP - DOCUMENTAÇÃO
+=================================================================================
+
+SOBRE O PROJETO
+===============
+PedindoApp é um aplicativo de delivery de comida desenvolvido em React com TypeScript.
+O app permite aos usuários navegar por restaurantes, adicionar itens ao carrinho,
+fazer pedidos e acompanhar o status da entrega em tempo real.
+
+TECNOLOGIAS UTILIZADAS
+======================
+- React 18.3.1
+- TypeScript
+- Vite (bundler)
+- React Router DOM 6.26.2 (roteamento)
+- Tailwind CSS (estilização)
+- Shadcn/UI (componentes UI)
+- Lucide React (ícones)
+- TanStack React Query 5.56.2 (gerenciamento de estado)
+- Context API (gerenciamento de estado global)
+
+ESTRUTURA DO PROJETO
+====================
+
+src/
+├── components/
+│   ├── ui/                    # Componentes UI base (shadcn/ui)
+│   └── Header.tsx             # Cabeçalho da aplicação
+├── contexts/
+│   ├── CartContext.tsx        # Contexto do carrinho de compras
+│   └── OrderContext.tsx       # Contexto de pedidos
+├── pages/
+│   ├── Index.tsx              # Página inicial
+│   ├── Search.tsx             # Página de busca e filtros
+│   ├── Restaurant.tsx         # Página do restaurante
+│   ├── Cart.tsx               # Página do carrinho
+│   ├── Address.tsx            # Página de endereço
+│   ├── Payment.tsx            # Página de pagamento
+│   ├── OrderTracking.tsx      # Página de acompanhamento do pedido
+│   └── NotFound.tsx           # Página 404
+└── App.tsx                    # Componente principal com roteamento
+
+FUNCIONALIDADES PRINCIPAIS
+===========================
+
+1. PÁGINA INICIAL (/)
+   - Exibição de localização do usuário
+   - Barra de busca
+   - Banners promocionais
+   - Grid de categorias de comida
+   - Lista de restaurantes próximos com:
+     * Avaliação
+     * Tempo de entrega
+     * Taxa de entrega
+     * Distância
+     * Promoções
+
+2. PÁGINA DE BUSCA (/search)
+   - Busca por nome do restaurante ou tipo de comida
+   - Filtros por categoria
+   - Lista de resultados filtrados
+   - Informações detalhadas dos restaurantes
+
+3. PÁGINA DO RESTAURANTE (/restaurant/:id)
+   - Informações do restaurante
+   - Menu de produtos
+   - Adicionar itens ao carrinho
+   - Customizações de produtos
+
+4. CARRINHO (/cart)
+   - Lista de itens adicionados
+   - Controle de quantidade
+   - Cálculo de subtotal
+   - Taxa de entrega
+   - Total final
+   - Botão para finalizar pedido
+
+5. ENDEREÇO (/address)
+   - Formulário de endereço de entrega
+   - Validação de campos obrigatórios
+
+6. PAGAMENTO (/payment)
+   - Seleção de método de pagamento
+   - Confirmação do pedido
+   - Geração do ID do pedido
+
+7. ACOMPANHAMENTO (/order-tracking/:orderId)
+   - Status do pedido em tempo real
+   - Informações do entregador
+   - Tempo estimado de entrega
+   - Mapa de localização (simulado)
+
+CONTEXTOS E GERENCIAMENTO DE ESTADO
+====================================
+
+CART CONTEXT (CartContext.tsx)
+- Gerencia o estado do carrinho de compras
+- Funções disponíveis:
+  * addItem(): Adiciona item ao carrinho
+  * removeItem(): Remove item do carrinho
+  * updateQuantity(): Atualiza quantidade
+  * clearCart(): Limpa o carrinho
+  * totalItems: Total de itens
+  * totalPrice: Preço total
+  * deliveryFee: Taxa de entrega
+  * finalTotal: Total final
+
+ORDER CONTEXT (OrderContext.tsx)
+- Gerencia o estado dos pedidos
+- Funções disponíveis:
+  * createOrder(): Cria um novo pedido
+  * updateOrderStatus(): Atualiza status do pedido
+  * getOrder(): Busca pedido por ID
+- Status de pedido: confirmed, preparing, on_way, delivered
+
+COMPONENTES REUTILIZÁVEIS
+=========================
+
+HEADER (Header.tsx)
+- Cabeçalho flexível usado em todas as páginas
+- Props:
+  * title?: string - Título personalizado
+  * showBack?: boolean - Exibir botão voltar
+  * showCart?: boolean - Exibir ícone do carrinho
+- Exibe contador de itens no carrinho
+
+ROTEAMENTO
+==========
+- "/" - Página inicial
+- "/search" - Busca e filtros
+- "/restaurant/:id" - Página do restaurante
+- "/cart" - Carrinho de compras
+- "/address" - Endereço de entrega
+- "/payment" - Pagamento
+- "/order-tracking/:orderId" - Acompanhamento do pedido
+- "*" - Página 404 (NotFound)
+
+RESPONSIVIDADE
+==============
+- Design mobile-first
+- Layout otimizado para dispositivos móveis
+- Máximo de 448px de largura (max-w-md)
+- Interface touch-friendly
+
+DADOS MOCKADOS
+==============
+O aplicativo utiliza dados estáticos para demonstração:
+
+CATEGORIAS:
+- Pizza 🍕
+- Hambúrguer 🍔
+- Japonesa 🍣
+- Brasileira 🍖
+- Italiana 🍝
+- Doces 🍰
+
+RESTAURANTES EXEMPLO:
+1. Pizzaria Bella Napoli
+   - Categoria: Pizza
+   - Avaliação: 4.8
+   - Tempo: 25-35 min
+   - Taxa: R$ 4,99
+
+2. Burger House
+   - Categoria: Hambúrguer
+   - Avaliação: 4.6
+   - Tempo: 30-40 min
+   - Taxa: R$ 3,99
+
+3. Sushi Zen
+   - Categoria: Japonesa
+   - Avaliação: 4.9
+   - Tempo: 40-50 min
+   - Taxa: R$ 5,99
+
+SIMULAÇÕES
+==========
+- Mudança automática de status do pedido
+- Entregador fictício: João Silva (4.8 estrelas)
+- Localização fixa: R. das Flores, 123 - Centro
+- Taxa de entrega padrão: R$ 4,99
+
+COMO EXECUTAR O PROJETO
+=======================
+1. Clone o repositório
+2. Instale as dependências: npm install
+3. Execute o projeto: npm run dev
+4. Acesse: http://localhost:5173
+
+COMO EXPANDIR O PROJETO
+=======================
+Para tornar o app funcional em produção:
+
+1. INTEGRAÇÃO COM BACKEND:
+   - Conectar com API real de restaurantes
+   - Implementar autenticação de usuários
+   - Sistema de pagamento real
+   - Tracking GPS real
+
+2. BANCO DE DADOS:
+   - Usar Supabase ou outro banco
+   - Tabelas: users, restaurants, products, orders, etc.
+
+3. FUNCIONALIDADES ADICIONAIS:
+   - Sistema de avaliações
+   - Histórico de pedidos
+   - Notificações push
+   - Chat com entregador
+   - Cupons de desconto
+
+4. OTIMIZAÇÕES:
+   - Cache de dados
+   - Lazy loading de imagens
+   - Service Worker para offline
+   - Testes automatizados
+
+DEPLOY
+======
+O projeto pode ser deployado usando:
+- Vercel
+- Netlify
+- GitHub Pages
+- Lovable (plataforma atual)
+
+Para deploy personalizado:
+1. Build: npm run build
+2. Upload da pasta dist/ para servidor
+
+CONTATO E SUPORTE
+=================
+Este é um projeto de demonstração criado com Lovable.
+Para modificações, use a interface do Lovable ou clone o código.
+
+Documentação do Lovable: https://docs.lovable.dev/
+Comunidade Discord: https://discord.com/channels/1119885301872070706/1280461670979993613
+
+=================================================================================
+                            FIM DA DOCUMENTAÇÃO
+=================================================================================
