@@ -1,6 +1,8 @@
 import api from './api';
 import { type CartItem } from '@/contexts/CartContext';
 
+const API_URL = process.env.VITE_API_URL || 'http://apiquick.vmagenciadigital.com';
+
 // Definir interfaces baseadas na estrutura do banco de dados e uso atual
 export interface Category {
   id: string;
@@ -206,68 +208,88 @@ export interface ProcessPaymentResponse {
 
 // Função para buscar categorias
 export const fetchCategories = async (): Promise<Category[]> => {
-  // Assumindo que o backend tem um endpoint /api/categories
-  const response = await api.get<Category[]>('/categories');
-  // Pode ser necessário mapear a resposta se a estrutura for diferente
-  return response.data;
+  try {
+    const response = await api.get('/categories');
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
+    throw error;
+  }
 };
 
 // Função para buscar restaurantes (estabelecimentos) para a lista
 export const fetchRestaurants = async (): Promise<EstablishmentDetail[]> => {
-  // Assumindo que o backend tem um endpoint /api/restaurants ou /api/establishments
-  const response = await api.get<RawEstablishmentData[]>('/establishments');
-  // Pode ser necessário mapear a resposta para a interface EstablishmentDetail
-  return response.data.map(item => ({
-    id: item.id,
-    name: item.name, 
-    cuisine_type: item.category || '', // Mapear 'category' do backend para 'cuisine_type' do frontend
-    rating: Number(item.rating),
-    deliveryTime: item.business_hours,
-    deliveryFee: Number(item.delivery_fee),
-    image: item.image_url, // Mapear 'image_url' do backend para 'image' do frontend
-  }));
+  try {
+    const response = await api.get('/establishments');
+    return response.data.map((establishment: RawEstablishmentData) => ({
+      id: establishment.id,
+      name: establishment.name,
+      description: establishment.description,
+      cuisine_type: establishment.category,
+      rating: Number(establishment.rating) || 0,
+      deliveryFee: Number(establishment.delivery_fee),
+      image: establishment.image_url || establishment.banner_url,
+      address: establishment.address,
+      phone: establishment.phone || establishment.whatsapp,
+      business_hours: establishment.business_hours
+    }));
+  } catch (error) {
+    console.error('Erro ao buscar restaurantes:', error);
+    throw error;
+  }
 };
 
 // Função para buscar detalhes de um estabelecimento específico
 export const fetchEstablishmentDetail = async (establishmentId: string): Promise<EstablishmentDetail> => {
-  const response = await api.get<RawEstablishmentData>(`/establishments/${establishmentId}`);
-  const item = response.data;
-  return {
-    id: item.id,
-    name: item.name,
-    description: item.description,
-    cuisine_type: item.category || '',
-    rating: Number(item.rating),
-    deliveryTime: item.business_hours,
-    deliveryFee: Number(item.delivery_fee),
-    image: item.image_url,
-    address: item.address,
-    phone: item.phone,
-    business_hours: item.business_hours,
-  };
+  try {
+    const response = await api.get(`/establishments/${establishmentId}`);
+    const establishment = response.data;
+    return {
+      id: establishment.id,
+      name: establishment.name,
+      description: establishment.description,
+      cuisine_type: establishment.category,
+      rating: Number(establishment.rating) || 0,
+      deliveryFee: Number(establishment.delivery_fee),
+      image: establishment.image_url || establishment.banner_url,
+      address: establishment.address,
+      phone: establishment.phone || establishment.whatsapp,
+      business_hours: establishment.business_hours
+    };
+  } catch (error) {
+    console.error('Erro ao buscar detalhes do estabelecimento:', error);
+    throw error;
+  }
 };
 
 // Função para buscar produtos de um estabelecimento
 export const fetchProductsByEstablishment = async (establishmentId: string): Promise<Product[]> => {
-  // Assumindo endpoint /api/establishments/:id/products
-  const response = await api.get<Product[]>(`/establishments/${establishmentId}/products`);
-  return response.data.map(product => ({
-    ...product,
-    price: Number(product.price),
-  }));
+  try {
+    const response = await api.get(`/establishments/${establishmentId}/products`);
+    return response.data.map((product: Product) => ({
+      ...product,
+      price: Number(product.price),
+    }));
+  } catch (error) {
+    console.error('Erro ao buscar produtos do estabelecimento:', error);
+    throw error;
+  }
 };
 
 // Função para buscar grupos de opções de um produto
 export const fetchOptionGroupsByProduct = async (productId: string): Promise<OptionGroup[]> => {
-  // Assumindo endpoint /api/products/:id/option-groups
-  const response = await api.get<OptionGroup[]>(`/products/${productId}/option-groups`);
-  return response.data;
+  try {
+    const response = await api.get(`/products/${productId}/option-groups`);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar grupos de opções do produto:', error);
+    throw error;
+  }
 };
 
 // Função para buscar opções de um grupo de opções
 export const fetchOptionsByOptionGroup = async (optionGroupId: string): Promise<Option[]> => {
-  // Assumindo endpoint /api/option-groups/:id/options
-  const response = await api.get<Option[]>(`/option-groups/${optionGroupId}/options`);
+  const response = await api.get<Option[]>(`option-groups/${optionGroupId}/options`);
   return response.data.map(option => ({
     ...option,
     additional_price: Number(option.additional_price),
@@ -276,15 +298,19 @@ export const fetchOptionsByOptionGroup = async (optionGroupId: string): Promise<
 
 // Funções para pagamento
 export const fetchPaymentMethods = async (): Promise<PaymentMethod[]> => {
-  const response = await api.get('/payment-methods');
-  return response.data;
+  try {
+    const response = await api.get('/payment-methods');
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar métodos de pagamento:', error);
+    throw error;
+  }
 };
 
 // Função para processar pagamento e criar pedido
 export const processPayment = async (orderData: CreateOrderData): Promise<ProcessPaymentResponse> => {
   try {
-    const response = await api.post<ProcessPaymentResponse>('/orders', orderData);
-    console.log('Processando pagamento com dados:', orderData); // Log para depuração
+    const response = await api.post('/orders', orderData);
     return response.data;
   } catch (error) {
     console.error('Erro ao processar pagamento:', error);
@@ -295,13 +321,12 @@ export const processPayment = async (orderData: CreateOrderData): Promise<Proces
 // Função para login do usuário
 export const login = async (credentials: UserCredentials): Promise<AuthResponse> => {
   try {
-    // Simulando a chamada API de login
-    console.log('Tentando login com:', credentials);
-    // Ajustar endpoint e método HTTP conforme backend real
-    const response = await api.post<AuthResponse>('/auth/login', credentials); 
-    return response.data;
+    const response = await api.post('/login', credentials);
+    const { token, user } = response.data;
+    localStorage.setItem('authToken', token);
+    return { token, user };
   } catch (error) {
-    console.error('Erro no login:', error);
+    console.error('Erro ao fazer login:', error);
     throw error;
   }
 };
@@ -309,13 +334,12 @@ export const login = async (credentials: UserCredentials): Promise<AuthResponse>
 // Nova função para cadastro de usuário
 export const registerUser = async (registrationData: UserRegistrationData): Promise<AuthResponse> => {
   try {
-    // Simulando a chamada API de cadastro
-    console.log('Tentando cadastro com:', registrationData);
-    // Ajustar endpoint e método HTTP conforme backend real
-    const response = await api.post<AuthResponse>('/register', registrationData); 
-    return response.data;
+    const response = await api.post('/register', registrationData);
+    const { token, user } = response.data;
+    localStorage.setItem('authToken', token);
+    return { token, user };
   } catch (error) {
-    console.error('Erro no cadastro:', error);
+    console.error('Erro ao registrar usuário:', error);
     throw error;
   }
 };
@@ -323,10 +347,7 @@ export const registerUser = async (registrationData: UserRegistrationData): Prom
 // Função para buscar pedidos de um usuário (cliente)
 export const fetchUserOrders = async (userId: string): Promise<Order[]> => {
   try {
-    // Simulando a chamada API para buscar pedidos do usuário
-    console.log('Buscando pedidos para o usuário:', userId);
-    // Ajustar endpoint e método HTTP conforme backend real
-    const response = await api.get<Order[]>(`/users/${userId}/orders`); 
+    const response = await api.get(`/users/${userId}/orders`);
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar pedidos do usuário:', error);
@@ -337,59 +358,32 @@ export const fetchUserOrders = async (userId: string): Promise<Order[]> => {
 // Função para buscar detalhes de um pedido específico
 export const fetchOrderById = async (orderId: string): Promise<Order> => {
   try {
-    // Simulando a chamada API para buscar detalhes do pedido
-    console.log('Buscando detalhes do pedido:', orderId);
-    // Ajustar endpoint e método HTTP conforme backend real
-    const response = await api.get<Order>(`/orders/${orderId}`); 
+    const response = await api.get(`/orders/${orderId}`);
     return response.data;
   } catch (error) {
-    console.error('Erro ao buscar detalhes do pedido:', error);
+    console.error('Erro ao buscar pedido:', error);
     throw error;
   }
 };
 
 // Função para buscar o perfil do usuário por ID
 export const fetchUserProfile = async (userId: string): Promise<UserProfile> => {
-  const response = await api.get<RawUserProfile>(`/users/${userId}`);
-  const rawUserProfile = response.data;
-
-  const userProfile: UserProfile = {
-    id: rawUserProfile.id,
-    name: rawUserProfile.name,
-    email: rawUserProfile.email,
-    role: rawUserProfile.role,
-    phone: rawUserProfile.phone,
-  };
-
-  // Tentar analisar o campo de endereço como JSON
-  if (rawUserProfile.address && typeof rawUserProfile.address === 'string') {
-    try {
-      const parsedAddresses = JSON.parse(rawUserProfile.address);
-      if (Array.isArray(parsedAddresses) && parsedAddresses.every(item => 'id' in item && 'name' in item && 'fullAddress' in item && 'isDefault' in item)) {
-        userProfile.address = parsedAddresses as UserAddress[];
-      } else {
-        // Se não for um array válido de UserAddress, tratar como um único endereço antigo
-        userProfile.address = [{
-          id: 'default', // Um ID padrão para o endereço antigo
-          name: 'Endereço Principal',
-          fullAddress: rawUserProfile.address,
-          isDefault: true,
-        }];
-      }
-    } catch (e) {
-      // Se a string não for um JSON válido, tratar como um único endereço
-      userProfile.address = [{
-        id: 'default',
+  try {
+    const response = await api.get(`/users/${userId}`);
+    const userData = response.data;
+    return {
+      ...userData,
+      address: userData.address ? [{
+        id: '1',
         name: 'Endereço Principal',
-        fullAddress: rawUserProfile.address,
-        isDefault: true,
-      }];
-    }
-  } else {
-    userProfile.address = []; // Se não houver endereço ou não for string, iniciar com um array vazio
+        fullAddress: userData.address,
+        isDefault: true
+      }] : []
+    };
+  } catch (error) {
+    console.error('Erro ao buscar perfil do usuário:', error);
+    throw error;
   }
-
-  return userProfile;
 };
 
 // Função para atualizar o perfil do usuário
@@ -399,18 +393,15 @@ export const updateUserProfile = async (userId: string, profileData: UpdateUserP
   if (profileData.name !== undefined) dataToSend.name = profileData.name;
   if (profileData.phone !== undefined) dataToSend.phone = profileData.phone;
 
-  // Se o campo de endereço for um array de UserAddress, serializá-lo para JSON
   if (profileData.address !== undefined) {
     if (Array.isArray(profileData.address)) {
       dataToSend.address = JSON.stringify(profileData.address);
     } else {
-      // Isso não deve acontecer se a tipagem estiver correta no frontend
-      // Mas se acontecer (ex: string vazia), garanta que é uma string ou null
       dataToSend.address = profileData.address === null ? null : (profileData.address as string); 
     }
   }
 
-  const response = await api.put<RawUserProfile>(`/users/${userId}`, dataToSend);
+  const response = await api.put<RawUserProfile>(`users/${userId}`, dataToSend);
   const updatedRawProfile = response.data;
 
   const updatedProfile: UserProfile = {
@@ -421,7 +412,6 @@ export const updateUserProfile = async (userId: string, profileData: UpdateUserP
     phone: updatedRawProfile.phone,
   };
 
-  // Após a atualização, analisar o endereço de volta para o formato de array para o frontend
   if (updatedRawProfile.address && typeof updatedRawProfile.address === 'string') {
     try {
       const parsedAddresses = JSON.parse(updatedRawProfile.address);
@@ -453,12 +443,9 @@ export const updateUserProfile = async (userId: string, profileData: UpdateUserP
 // Nova função para submeter a avaliação de um pedido
 export const submitOrderRating = async (orderId: string, ratingData: OrderRatingData): Promise<void> => {
   try {
-    console.log(`Submetendo avaliação para o pedido ${orderId}:`, ratingData);
-    // Ajustar endpoint e método HTTP conforme backend real (ex: POST /orders/:id/rating)
     await api.post(`/orders/${orderId}/rating`, ratingData);
-    console.log(`Avaliação do pedido ${orderId} submetida com sucesso.`);
   } catch (error) {
-    console.error(`Erro ao submeter avaliação para o pedido ${orderId}:`, error);
+    console.error('Erro ao enviar avaliação do pedido:', error);
     throw error;
   }
 }; 

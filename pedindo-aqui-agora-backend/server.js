@@ -1,24 +1,81 @@
-// Carrega as variáveis de ambiente do arquivo .env
-require('dotenv').config();
-
+console.log('Iniciando server.js - Versão 2.0.0');
+// Importar módulos
+console.log('Importando express...');
 const express = require('express');
-const mysql = require('mysql2/promise'); // Usando a versão com Promises
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
+console.log('Express importado com sucesso.');
 
+console.log('Criando instância do express...');
 const app = express();
-const PORT = process.env.PORT || 3000; // Porta do backend, padrão 3000
+console.log('Instância do express criada com sucesso.');
+
+// Carrega as variáveis de ambiente do arquivo .env
+console.log('Iniciando carregamento do dotenv...');
+try {
+  require('dotenv').config();
+  console.log('dotenv carregado com sucesso.');
+  
+  // Verificar se as variáveis de ambiente necessárias estão definidas
+  console.log('Verificando variáveis de ambiente...');
+  const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'JWT_SECRET'];
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.error('Variáveis de ambiente ausentes:', missingVars);
+    process.exit(1);
+  }
+  
+  console.log('Todas as variáveis de ambiente necessárias estão definidas.');
+} catch (error) {
+  console.error('Erro ao carregar dotenv:', error);
+  process.exit(1);
+}
+
+console.log('Server.js starting...');
+
+console.log('Importando mysql2...');
+const mysql = require('mysql2/promise'); // Usando a versão com Promises
+console.log('mysql2 importado com sucesso.');
+
+console.log('Importando cors...');
+const cors = require('cors');
+console.log('cors importado com sucesso.');
+
+console.log('Importando bcrypt...');
+const bcrypt = require('bcrypt');
+console.log('bcrypt importado com sucesso.');
+
+console.log('Importando jsonwebtoken...');
+const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
+console.log('jsonwebtoken importado com sucesso.');
+
+const PORT = process.env.PORT || 8080; // Alterando a porta padrão para 8080
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; // Chave secreta para JWT (MUDAR EM PRODUÇÃO!)
 
 // Middleware para analisar o corpo das requisições como JSON
+console.log('Configurando middleware express.json()...');
 app.use(express.json());
+console.log('Express JSON middleware configured.');
 
-// Habilitar CORS para todas as origens (ideal para desenvolvimento)
-// Em produção, considere restringir a origem para a URL do seu frontend
-app.use(cors());
+// Configuração do CORS
+console.log('Configurando CORS...');
+app.use(cors({
+  origin: [
+    'http://vmagenciadigital.com',
+    'https://vmagenciadigital.com',
+    'https://quickdeliver1.vmagenciadigital.com',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:8080'  // Adicionando a porta 8080
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  maxAge: 86400 // Cache das opções de preflight por 24 horas
+}));
+console.log('CORS configured.');
 
 // Configuração do pool de conexão com o banco de dados
+console.log('Criando pool de conexão com o banco de dados...');
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -26,10 +83,15 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  connectTimeout: 10000, // 10 segundos
+  port: 3306, // Porta padrão do MySQL
+  ssl: false // Desabilita SSL para conexão direta
 });
+console.log('Database pool created.');
 
 // Testar a conexão com o banco de dados
+console.log('Testando conexão com o banco de dados...');
 pool.getConnection()
   .then(connection => {
     console.log('Conectado ao banco de dados MySQL!');
@@ -676,6 +738,6 @@ app.get('/api/users/:id', authenticateToken, async (req, res) => {
 });
 
 // Iniciar o servidor
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor backend rodando na porta ${PORT}`);
 });

@@ -90,62 +90,62 @@ const OrderTracking = () => {
   }
 
   if (orderId && order) {
-    const currentStepIndex = statusSteps.findIndex(step => step.id === order.status);
+  const currentStepIndex = statusSteps.findIndex(step => step.id === order.status);
 
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header title="Acompanhar pedido" showBack showCart={false} />
-        
-        <div className="max-w-md mx-auto px-4 pb-8">
-          {/* Order Status */}
-          <Card className="mt-4 mb-4">
-            <CardContent className="p-6">
-              <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  Pedido #{order.id}
-                </h2>
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header title="Acompanhar pedido" showBack showCart={false} />
+      
+      <div className="max-w-md mx-auto px-4 pb-8">
+        {/* Order Status */}
+        <Card className="mt-4 mb-4">
+          <CardContent className="p-6">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                Pedido #{order.id}
+              </h2>
                 <p className="text-gray-600">
                   Status: {statusSteps.find(step => step.id === order.status)?.label}
                 </p>
                 {order.estimatedTime && (
-                   <p className="text-gray-600">
-                     Tempo estimado: {order.estimatedTime} minutos
-                   </p>
+              <p className="text-gray-600">
+                Tempo estimado: {order.estimatedTime} minutos
+              </p>
                 )}
-              </div>
+            </div>
 
-              {/* Progress Bar */}
+            {/* Progress Bar */}
               {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
-                <div className="mb-6">
-                  <Progress value={progress} className="h-2 mb-4" />
-                  <div className="flex justify-between">
+            <div className="mb-6">
+              <Progress value={progress} className="h-2 mb-4" />
+              <div className="flex justify-between">
                     {statusSteps.filter(step => step.id !== 'CANCELLED' && step.id !== 'DELIVERED').map((step, index) => {
-                      const Icon = step.icon;
-                      const isCompleted = index <= currentStepIndex;
-                      const isCurrent = index === currentStepIndex;
-                      
-                      return (
-                        <div key={step.id} className="flex flex-col items-center">
-                          <div className={`p-2 rounded-full mb-2 ${
-                            isCompleted 
-                              ? 'bg-primary-500 text-white' 
-                              : 'bg-gray-200 text-gray-400'
-                          }`}>
-                            <Icon className="w-4 h-4" />
-                          </div>
-                          <span className={`text-xs text-center ${
-                            isCurrent ? 'font-semibold text-primary-500' : 'text-gray-600'
-                          }`}>
-                            {step.label}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                  const Icon = step.icon;
+                  const isCompleted = index <= currentStepIndex;
+                  const isCurrent = index === currentStepIndex;
+                  
+                  return (
+                    <div key={step.id} className="flex flex-col items-center">
+                      <div className={`p-2 rounded-full mb-2 ${
+                        isCompleted 
+                          ? 'bg-primary-500 text-white' 
+                          : 'bg-gray-200 text-gray-400'
+                      }`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className={`text-xs text-center ${
+                        isCurrent ? 'font-semibold text-primary-500' : 'text-gray-600'
+                      }`}>
+                        {step.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
               )}
 
-              {/* Current Status Message */}
+            {/* Current Status Message */}
               <div className={`text-center p-4 rounded-lg ${
                 order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-primary-50 text-primary-700'
               }`}>
@@ -156,61 +156,61 @@ const OrderTracking = () => {
                   {order.status === 'DELIVERING' && 'Seu pedido saiu para entrega'}
                   {order.status === 'DELIVERED' && 'Seu pedido foi entregue!'}
                   {order.status === 'CANCELLED' && 'Seu pedido foi cancelado.'}
-                </p>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Delivery Person */}
+          {(order.status === 'DELIVERING' || order.status === 'DELIVERED') && order.deliveryPerson && (
+          <Card className="mb-4">
+            <CardContent className="p-4">
+              <h3 className="font-semibold text-gray-900 mb-3">Entregador</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={order.deliveryPerson.photo} />
+                    <AvatarFallback>
+                        {order.deliveryPerson.name.split(' ').map((n: string) => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-medium text-gray-900">
+                      {order.deliveryPerson.name}
+                    </h4>
+                      {order.deliveryPerson.rating !== undefined && (
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm text-gray-600">
+                        {order.deliveryPerson.rating}
+                      </span>
+                    </div>
+                      )}
+                  </div>
+                </div>
+                <Button variant="outline" size="sm">
+                  Ligar
+                </Button>
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {/* Delivery Person */}
-          {(order.status === 'DELIVERING' || order.status === 'DELIVERED') && order.deliveryPerson && (
-            <Card className="mb-4">
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Entregador</h3>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={order.deliveryPerson.photo} />
-                      <AvatarFallback>
-                        {order.deliveryPerson.name.split(' ').map((n: string) => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-medium text-gray-900">
-                        {order.deliveryPerson.name}
-                      </h4>
-                      {order.deliveryPerson.rating !== undefined && (
-                         <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm text-gray-600">
-                              {order.deliveryPerson.rating}
-                            </span>
-                         </div>
-                      )}
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Ligar
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Order Details */}
-          <Card className="mb-4">
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Detalhes do pedido</h3>
+        {/* Order Details */}
+        <Card className="mb-4">
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-gray-900 mb-3">Detalhes do pedido</h3>
               <div className="space-y-2 text-sm">
-                {order.items.map((item) => (
+              {order.items.map((item) => (
                   <div key={item.id} className="flex justify-between items-center">
-                    <span>{item.quantity}x {item.name}</span>
+                  <span>{item.quantity}x {item.name}</span>
                     <span className="font-semibold">
                       R$ {item.totalPrice.toFixed(2).replace('.', ',')}
                     </span>
-                  </div>
-                ))}
-              </div>
-
+                </div>
+              ))}
+            </div>
+            
               <Separator className="my-3" />
               
               <div className="space-y-2 text-sm">
@@ -231,13 +231,13 @@ const OrderTracking = () => {
                 <span className="text-primary-500">
                   R$ {(order.total + order.deliveryFee).toFixed(2).replace('.', ',')}
                 </span>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
           {/* Payment and Delivery Info */}
           <Card className="mb-4">
-            <CardContent className="p-4">
+          <CardContent className="p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Pagamento e Entrega</h3>
               <div className="space-y-2 text-sm text-gray-700">
                 <p>Pagamento: {order.paymentMethod}</p>
@@ -251,8 +251,8 @@ const OrderTracking = () => {
                   </p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+          </CardContent>
+        </Card>
 
           {/* Avaliar Pedido Button */}
           {order.status === 'DELIVERED' && (
@@ -260,7 +260,7 @@ const OrderTracking = () => {
               Avaliar Pedido
             </Button>
           )}
-        </div>
+          </div>
 
         {orderId && (
           <OrderRatingModal

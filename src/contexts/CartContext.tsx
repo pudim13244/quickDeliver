@@ -56,9 +56,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       const existingItemIndex = prev.findIndex(
         item => item.id === newItem.id &&
-                JSON.stringify(item.customizations) === JSON.stringify(newItem.customizations)
+        JSON.stringify(item.customizations) === JSON.stringify(newItem.customizations)
       );
-
+      
       if (existingItemIndex > -1) {
         // Item com as mesmas opções já existe, atualizar quantidade e total
         const updatedItems = [...prev];

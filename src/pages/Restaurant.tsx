@@ -193,7 +193,7 @@ const Restaurant = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header title={restaurant.name} showBack />
-
+      
       <div className="max-w-md mx-auto">
         <div className="bg-white">
           <img
@@ -275,15 +275,15 @@ const Restaurant = () => {
                                   {selectedItem?.description || 'Sem descrição.'}
                                 </DialogDescription>
                               </DialogHeader>
-
+                              
                               {selectedItem && (
                                 <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
                                   {selectedItem.image_url && (
-                                     <img
+                                  <img
                                        src={selectedItem.image_url}
-                                       alt={selectedItem.name}
-                                       className="w-full h-32 object-cover rounded"
-                                     />
+                                    alt={selectedItem.name}
+                                    className="w-full h-32 object-cover rounded"
+                                  />
                                   )}
 
                                   {isLoadingOptionGroups ? (
@@ -298,7 +298,7 @@ const Restaurant = () => {
                                           <h4 className="font-medium mb-1">{group.name} {group.is_required && <span className="text-red-500 text-xs">(Obrigatório)</span>}</h4>
                                           {group.description && <p className="text-sm text-gray-600">{group.description}</p>}
                                           <p className="text-sm text-gray-600">Selecione: Min {group.min_selections || 0}, Max {group.max_selections || 1}</p>
-                                          <div className="space-y-2">
+                                      <div className="space-y-2">
                                             {group.options && group.options.map(option => (
                                               <div key={option.id} className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-2">
@@ -312,7 +312,7 @@ const Restaurant = () => {
                                                        className="form-radio text-primary-500 focus:ring-primary-500"
                                                     />
                                                   ) : (
-                                                    <Checkbox
+                                            <Checkbox
                                                       id={`option-${option.id}`}
                                                       checked={selectedOptions[group.id]?.includes(option.id) || false}
                                                       onCheckedChange={(isChecked) => handleOptionChange(group.id, option.id, !!isChecked)}
@@ -328,16 +328,16 @@ const Restaurant = () => {
                                                 {option.additional_price !== undefined && option.additional_price > 0 && (
                                                   <span className="text-sm text-gray-600">+ R$ {Number(option.additional_price).toFixed(2).replace('.', ',')}</span>
                                                 )}
-                                              </div>
-                                            ))}
                                           </div>
+                                        ))}
+                                      </div>
                                         </div>
                                       ))}
                                     </div>
                                   ) : (
                                     <div>Nenhuma opção de personalização disponível.</div>
                                   )}
-
+                                  
                                   <div>
                                     <h3 className="font-medium mb-2">Observações</h3>
                                     <Textarea
@@ -366,7 +366,7 @@ const Restaurant = () => {
                                        <Plus className="w-4 h-4" />
                                      </Button>
                                   </div>
-
+                                  
                                   <div className="flex items-center justify-between pt-4 border-t">
                                     <span className="text-lg font-bold">
                                       Total: R$ {modalItemTotal.toFixed(2).replace('.', ',')}

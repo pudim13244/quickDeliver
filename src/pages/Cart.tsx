@@ -53,7 +53,7 @@ const Cart = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header title="Carrinho" showBack showCart={false} />
-
+      
       <div className="max-w-md mx-auto px-4 pb-24">
         {/* Restaurant Info */}
         <div className="bg-white rounded-lg p-4 mb-4 mt-4">
@@ -77,7 +77,7 @@ const Cart = () => {
                         {item.customizations.map((customization, index) => (
                           <p key={index}>
                             - {customization.name} {customization.additional_price !== undefined && Number(customization.additional_price) > 0 && `(+R$ ${Number(customization.additional_price).toFixed(2).replace('.', ',')})`}
-                          </p>
+                      </p>
                         ))}
                       </div>
                     )}
@@ -96,12 +96,12 @@ const Cart = () => {
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
-
+                
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-primary-500">
                     R$ {(item.totalPrice || (item.price * item.quantity)).toFixed(2).replace('.', ',')}
                   </span>
-
+                  
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
@@ -157,26 +157,26 @@ const Cart = () => {
         <Card className="mb-4">
           <CardContent className="p-4 space-y-3">
             <h3 className="font-semibold text-gray-900">Resumo do pedido</h3>
-
+            
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
             </div>
-
+            
             <div className="flex justify-between text-sm">
               <span>Taxa de entrega</span>
               <span>R$ {deliveryFee.toFixed(2).replace('.', ',')}</span>
             </div>
-
+            
             {discount > 0 && (
               <div className="flex justify-between text-sm text-green-600">
                 <span>Desconto</span>
                 <span>-R$ {discount.toFixed(2).replace('.', ',')}</span>
               </div>
             )}
-
+            
             <Separator />
-
+            
             <div className="flex justify-between font-semibold text-lg">
               <span>Total</span>
               <span className="text-primary-500">

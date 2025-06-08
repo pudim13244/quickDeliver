@@ -1,0 +1,18 @@
+$servername = "localhost"; // Geralmente 'localhost', mas pode variar na Hostinger
+$username = "u328800108_food"; // Usuário do banco de dados criado na Hostinger
+$password = "Vit@r1324";     // Senha do usuário do banco de dados
+$dbname = "u328800108_food_fly";       // Nome do banco de dados criado na Hostinger
+
+
+
+vps info 
+
+ssh root@82.25.69.111
+senha Vit@r12664298402
+
+
+dominio site
+http://quickdeliver.vmagenciadigital.com/
+
+
+api http://apiquick.vmagenciadigital.com/    http://82.25.69.111

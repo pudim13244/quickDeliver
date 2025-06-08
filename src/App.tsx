@@ -27,26 +27,26 @@ const App = () => (
       <CartProvider>
         <OrderProvider>
           <AuthProvider>
-            <Toaster />
-            <Sonner />
+          <Toaster />
+          <Sonner />
             <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/restaurant/:id" element={<Restaurant />} />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/restaurant/:id" element={<Restaurant />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/profile" element={<Profile />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/address" element={<Address />} />
-                  <Route path="/payment" element={<Payment />} />
-                  <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/address" element={<Address />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
                   <Route path="/order-tracking" element={<OrderTracking />} />
                 </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
           </AuthProvider>
         </OrderProvider>
       </CartProvider>

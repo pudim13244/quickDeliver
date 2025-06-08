@@ -144,16 +144,16 @@ const Index = () => {
             {categoriesData.map((category) => {
               const IconComponent = categoryIcons[category.name.toLowerCase()] || UtensilsCrossed; // Padrão se não encontrar
               return (
-                <Link
-                  key={category.id}
+              <Link
+                key={category.id}
                   to={{ pathname: "/search", search: `?category=${category.name}` }}
                   className="w-32 flex-shrink-0 flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:border-marjoriatira-300 transition-colors"
-                >
+              >
                   <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-gray-200 text-marjoriatira-500">
                     <IconComponent className="w-6 h-6" />
-                  </div>
+                </div>
                   <span className="text-sm font-medium text-gray-700 text-center">{category.name}</span>
-                </Link>
+              </Link>
               );
             })}
           </div>

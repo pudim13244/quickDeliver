@@ -149,54 +149,54 @@ const Payment = () => {
                 <div key={method.id} className="flex items-center space-x-2">
                   <RadioGroupItem value={method.id} id={method.id} />
                   <Label htmlFor={method.id}>{method.name}</Label>
-                </div>
+                      </div>
               ))}
             </RadioGroup>
 
             {/* Campos específicos do método de pagamento */}
             {(selectedMethod === 'credit_card' || selectedMethod === 'debit_card') && (
               <div className="space-y-4">
-                <div>
+                      <div>
                   <Label htmlFor="cardName">Nome no Cartão</Label>
-                  <Input
+              <Input
                     id="cardName"
                     value={paymentDetails.cardName || ''}
                     onChange={(e) => handleInputChange('cardName', e.target.value)}
                     placeholder="Nome como está no cartão"
                   />
                 </div>
-                <div>
+              <div>
                   <Label htmlFor="cardNumber">Número do Cartão</Label>
-                  <Input
-                    id="cardNumber"
+                <Input
+                  id="cardNumber"
                     value={paymentDetails.cardNumber || ''}
                     onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                    placeholder="0000 0000 0000 0000"
-                  />
-                </div>
+                  placeholder="0000 0000 0000 0000"
+                />
+              </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="expiry">Validade</Label>
-                    <Input
-                      id="expiry"
+                <div>
+                  <Label htmlFor="expiry">Validade</Label>
+                  <Input
+                    id="expiry"
                       value={paymentDetails.expiry || ''}
                       onChange={(e) => handleInputChange('expiry', e.target.value)}
-                      placeholder="MM/AA"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="cvv">CVV</Label>
-                    <Input
-                      id="cvv"
+                    placeholder="MM/AA"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cvv">CVV</Label>
+                  <Input
+                    id="cvv"
                       value={paymentDetails.cvv || ''}
                       onChange={(e) => handleInputChange('cvv', e.target.value)}
-                      placeholder="123"
-                    />
+                    placeholder="123"
+                  />
                   </div>
                 </div>
               </div>
             )}
-
+              
             {selectedMethod === 'money' && (
               <div>
                 <Label htmlFor="changeFor">Valor para Troco</Label>
@@ -208,7 +208,7 @@ const Payment = () => {
                   placeholder="Valor em reais"
                 />
               </div>
-            )}
+        )}
 
             {selectedMethod === 'pix' && (
               <div className="space-y-4">
@@ -231,7 +231,7 @@ const Payment = () => {
               ) : (
                 'Finalizar Pedido'
               )}
-            </Button>
+              </Button>
           </form>
         </div>
       </div>

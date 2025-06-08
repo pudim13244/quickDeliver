@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { fetchUserProfile, updateUserProfile, type UserProfile, type UpdateUserProfileData } from '@/services/dataService';
+import { fetchUserProfile, updateUserProfile, type UserProfile, type UpdateUserProfileData, type UserAddress } from '@/services/dataService';
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
@@ -29,10 +29,19 @@ export default function Profile() {
   // Efeito para preencher o formulário de edição quando os dados do perfil carregam
   useEffect(() => {
     if (profile) {
+      let addressesToSet: UserAddress[] = [];
+      if (Array.isArray(profile.address)) {
+        addressesToSet = profile.address;
+      } else if (typeof profile.address === 'string' && profile.address) {
+        // Se for uma string, crie um objeto UserAddress a partir dela
+        addressesToSet = [{ id: 'initial', name: 'Principal', fullAddress: profile.address, isDefault: true }];
+      }
+      // Se profile.address for undefined ou null, addressesToSet permanecerá vazio, o que é o comportamento esperado.
+
       setEditableProfile({
         name: profile.name,
         phone: profile.phone,
-        address: profile.address,
+        address: addressesToSet, // Garante que é sempre um array de UserAddress
       });
     }
   }, [profile]);
@@ -54,13 +63,35 @@ export default function Profile() {
   });
 
   const handleInputChange = (field: keyof UpdateUserProfileData, value: string) => {
-    setEditableProfile(prev => ({ ...prev, [field]: value }));
+    setEditableProfile(prev => {
+      if (field === 'address') {
+        const currentAddresses = Array.isArray(prev.address) ? [...prev.address] : [];
+        if (currentAddresses.length > 0) {
+          const defaultIndex = currentAddresses.findIndex(addr => addr.isDefault);
+          if (defaultIndex !== -1) {
+            currentAddresses[defaultIndex] = { ...currentAddresses[defaultIndex], fullAddress: value };
+          } else {
+            currentAddresses[0] = { ...currentAddresses[0], fullAddress: value };
+          }
+        } else {
+          currentAddresses.push({ id: 'new', name: 'Principal', fullAddress: value, isDefault: true });
+        }
+        return { ...prev, address: currentAddresses };
+      } else {
+        return { ...prev, [field]: value };
+      }
+    });
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (user?.id) {
-      handleUpdateProfile(editableProfile);
+      // editableProfile.address já deve ser UserAddress[] aqui devido ao useEffect e handleInputChange
+      handleUpdateProfile({
+        name: editableProfile.name,
+        phone: editableProfile.phone,
+        address: editableProfile.address, // Passa o array de UserAddress diretamente
+      });
     } else {
       toast.error('Usuário não identificado para atualização.');
     }
@@ -94,6 +125,12 @@ export default function Profile() {
 
   // Exibir perfil ou formulário de edição se os dados estiverem carregados
   if (profile) {
+    // Determine o endereço a ser exibido no campo de input de edição
+    const currentEditableAddress = Array.isArray(editableProfile.address) 
+      && editableProfile.address.length > 0
+      ? (editableProfile.address.find(addr => addr.isDefault) || editableProfile.address[0]).fullAddress
+      : '';
+
     return (
       <div className="min-h-screen bg-gray-50">
         <Header title={isEditing ? "Editar Perfil" : "Meu Perfil"} showBack showCart={false} />
@@ -134,7 +171,7 @@ export default function Profile() {
                     <Input
                       id="address"
                       type="text"
-                      value={editableProfile.address || ''}
+                      value={currentEditableAddress} // Usa a variável criada
                       onChange={(e) => handleInputChange('address', e.target.value)}
                     />
                   </div>
@@ -176,14 +213,23 @@ export default function Profile() {
                       <Separator />
                     </>
                   )}
-                  {profile.address && (
+                  {profile.address && Array.isArray(profile.address) && profile.address.length > 0 ? (
                     <>
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Endereço:</p>
-                        <p className="text-gray-900">{profile.address}</p>
+                        <p className="text-sm font-medium text-gray-700">Endereço(s):</p>
+                        {profile.address.map((addr, index) => (
+                          <p key={addr.id || index} className="text-gray-900">
+                            {addr.fullAddress} {addr.isDefault && ' (Padrão)'}
+                          </p>
+                        ))}
                       </div>
                       <Separator />
                     </>
+                  ) : (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Endereço:</p>
+                      <p className="text-gray-600">Nenhum endereço definido.</p>
+                    </div>
                   )}
                   <div>
                     <p className="text-sm font-medium text-gray-700">Função:</p>
