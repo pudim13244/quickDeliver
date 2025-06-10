@@ -346,6 +346,55 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+// Rota de login de usuário
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email e senha são obrigatórios.' });
+  }
+
+  try {
+    // Buscar usuário pelo email
+    const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (users.length === 0) {
+      return res.status(401).json({ message: 'Usuário não encontrado.' });
+    }
+
+    const user = users[0];
+
+    // Verificar senha
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ message: 'Senha incorreta.' });
+    }
+
+    // Gerar token JWT
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Retornar token e dados do usuário
+    res.json({
+      message: 'Login realizado com sucesso!',
+      token: token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        address: user.address
+      }
+    });
+  } catch (err) {
+    console.error('Erro ao fazer login:', err.message);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+});
+
 // Middleware de autenticação para proteger rotas
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];

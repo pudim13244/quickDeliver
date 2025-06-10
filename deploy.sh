@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Atualiza o código do frontend
+cd /var/www/quickdeliver
+git pull origin main
+npm install
+npm run build
+
+# Atualiza o código do backend
+cd /var/www/quickdeliver-api/quickdeliver-backend
+git pull origin main
+npm install
+pm2 restart quickdeliver-backend
+
+# Reinicia o Nginx
+systemctl restart nginx
+
 # Deploy do Frontend
 echo "Fazendo deploy do frontend..."
 cd ..

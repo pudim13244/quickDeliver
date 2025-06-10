@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -18,18 +17,14 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  // const [role, setRole] = useState<'CUSTOMER' | 'ESTABLISHMENT' | 'DELIVERY'>('CUSTOMER'); // Default role
 
   const { mutate: handleRegister, isPending: isLoading } = useMutation<AuthResponse, Error, UserRegistrationData>({
     mutationFn: register,
     onSuccess: (data) => {
-      console.log('Cadastro bem-sucedido:', data);
       toast.success('Cadastro realizado com sucesso!');
-      // Redirecionar para a página inicial (o usuário já estará logado via AuthContext)
       navigate('/');
     },
     onError: (error: any) => {
-      // Melhorar o tratamento de erro para exibir mensagens específicas do backend, se houver
       toast.error(`Erro no cadastro: ${error.message || 'Ocorreu um erro.'}`);
       console.error('Erro:', error);
     },
@@ -45,101 +40,116 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Criar Conta</CardTitle>
-          <CardDescription>Preencha os campos abaixo para criar sua conta.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Seu nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Telefone</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="(XX) XXXXX-XXXX"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Endereço</Label>
-              <Input
-                id="address"
-                type="text"
-                placeholder="Sua rua, número, bairro"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
-            </div>
-            {/* <div className="space-y-2">
-              <Label htmlFor="role">Eu sou</Label>
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value as 'CUSTOMER' | 'ESTABLISHMENT' | 'DELIVERY')}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    <div className="min-h-screen flex flex-col bg-marjoriatira-500">
+      {/* Topo com logo */}
+      <div className="flex-1 flex flex-col items-center justify-center relative pb-12">
+        <div className="flex flex-col items-center justify-center">
+          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-4 shadow-lg">
+            <span className="text-marjoriatira-500 text-4xl font-bold">Q</span>
+          </div>
+          <h1 className="text-white text-2xl font-bold tracking-wide">QuickDeliver</h1>
+          <p className="text-white text-sm opacity-80 mt-1">Seu delivery rápido e fácil</p>
+        </div>
+      </div>
+      {/* Formulário */}
+      <div className="bg-white rounded-t-3xl shadow-lg px-6 pt-8 pb-6 w-full max-w-md mx-auto -mt-16 z-10">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="text-center mb-2">
+            <h2 className="text-xl font-semibold text-marjoriatira-500">Criar Conta</h2>
+            <p className="text-gray-500 text-sm">Preencha os campos abaixo para se cadastrar</p>
+          </div>
+          {/* Social login (apenas visual) */}
+          <div className="flex justify-center gap-4 mb-2">
+            <button type="button" className="bg-gray-100 rounded-full p-2 hover:bg-gray-200 transition"><img src="/google.svg" alt="Google" className="w-6 h-6" /></button>
+            <button type="button" className="bg-gray-100 rounded-full p-2 hover:bg-gray-200 transition"><img src="/facebook.svg" alt="Facebook" className="w-6 h-6" /></button>
+            <button type="button" className="bg-gray-100 rounded-full p-2 hover:bg-gray-200 transition"><img src="/twitter.svg" alt="Twitter" className="w-6 h-6" /></button>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Nome</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="Seu nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="bg-gray-50"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="bg-gray-50"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Senha</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="bg-gray-50"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Telefone</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="(XX) XXXXX-XXXX"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              className="bg-gray-50"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="address">Endereço</Label>
+            <Input
+              id="address"
+              type="text"
+              placeholder="Sua rua, número, bairro"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+              className="bg-gray-50"
+            />
+          </div>
+          <Button
+            type="submit"
+            className="w-full bg-primary hover:bg-secondary text-white font-semibold rounded-full py-3 text-base shadow-md transition"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Cadastrando...
+              </>
+            ) : (
+              'Criar Conta'
+            )}
+          </Button>
+          <div className="text-center mt-2">
+            <span className="text-sm text-gray-600">Já tem uma conta?{' '}
+              <button
+                type="button"
+                className="text-marjoriatira-500 font-semibold hover:underline"
+                onClick={() => navigate('/login')}
               >
-                <option value="CUSTOMER">Cliente</option>
-                <option value="ESTABLISHMENT">Estabelecimento</option>
-                <option value="DELIVERY">Entregador</option>
-              </select>
-            </div> */}
-            
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Cadastrando...
-                </>
-              ) : (
-                'Criar Conta'
-              )}
-            </Button>
-            <div className="text-center text-sm mt-4">
-              Já tem uma conta? {''}
-              <Link to="/login" className="underline">
                 Entrar
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              </button>
+            </span>
+          </div>
+        </form>
+      </div>
     </div>
   );
 } 

@@ -1,8 +1,8 @@
 module.exports = {
   apps : [{
-    name: 'pedindo-aqui-agora-backend',
-    script: 'server.js',
-    cwd: '/var/www/quickdeliver-api/pedindo-aqui-agora-backend',
+    name: 'quickdeliver-backend',
+    script: 'index.js',
+    cwd: '/var/www/quickdeliver-api/quickdeliver-backend',
     instances: 'max',
     exec_mode: 'cluster',
     autorestart: true,

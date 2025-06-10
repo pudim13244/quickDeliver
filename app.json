@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Pedindo Aqui Agora",
-    "slug": "pedindo-aqui-agora",
+    "name": "QuickDeliver",
+    "slug": "quickdeliver",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

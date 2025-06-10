@@ -12,6 +12,37 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEstablishmentDetail, fetchProductsByEstablishment, fetchOptionGroupsByProduct, EstablishmentDetail, Product, OptionGroup, Option } from '@/services/dataService';
 
+interface ImageWithFallbackProps {
+  src: string;
+  alt: string;
+  imgClassName: string;
+  containerClassName: string;
+}
+
+const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({ src, alt, imgClassName, containerClassName }) => {
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = () => {
+    setHasError(true);
+  };
+
+  if (hasError) {
+    // Se a imagem falhar ao carregar, renderiza uma div vazia para manter o espaço em branco.
+    return <div className={containerClassName} style={{ backgroundColor: 'white' }}></div>;
+  }
+
+  return (
+    <div className={containerClassName}>
+      <img
+        src={src}
+        alt={alt}
+        className={imgClassName}
+        onError={handleError}
+      />
+    </div>
+  );
+};
+
 const Restaurant = () => {
   const { id } = useParams<{ id: string }>();
   const { addItem } = useCart();
@@ -196,10 +227,11 @@ const Restaurant = () => {
       
       <div className="max-w-md mx-auto">
         <div className="bg-white">
-          <img
+          <ImageWithFallback
             src={restaurant.image || '/placeholder-restaurant-banner.png'}
             alt={restaurant.name}
-            className="w-full h-48 object-cover"
+            imgClassName="w-full h-48 object-cover"
+            containerClassName="w-full h-48 relative"
           />
           <div className="p-4">
             <h1 className="text-xl font-bold text-gray-900">{restaurant.name}</h1>
@@ -248,16 +280,21 @@ const Restaurant = () => {
                         <div className="flex-1 p-3">
                           <h3 className="font-semibold text-gray-900">{item.name}</h3>
                           <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                          <p className="text-lg font-bold text-primary-500">
-                            R$ {Number(item.price || 0).toFixed(2).replace('.', ',')}
-                          </p>
+                          <p className="font-bold text-gray-900">R$ {item.price?.toFixed(2).replace('.', ',')}</p>
                         </div>
                         <div className="w-24 h-24 relative">
-                          <img
-                            src={item.image_url || '/placeholder-product.png'}
+                          {item.image_url ? (
+                            <ImageWithFallback
+                              src={item.image_url}
                             alt={item.name}
-                            className="w-full h-full object-cover"
+                              imgClassName="w-full h-full object-cover rounded-md"
+                              containerClassName="w-24 h-24 relative"
                           />
+                          ) : (
+                            <div className="w-24 h-24 bg-white flex items-center justify-center rounded-md">
+                              {/* Placeholder vazio se não houver imagem */}
+                            </div>
+                          )}
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button

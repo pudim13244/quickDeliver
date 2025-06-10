@@ -22,6 +22,37 @@ const categoryIcons: { [key: string]: React.ElementType } = {
   // Adicione mais mapeamentos conforme necessário
 };
 
+interface ImageWithFallbackProps {
+  src: string;
+  alt: string;
+  imgClassName: string;
+  containerClassName: string;
+}
+
+const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({ src, alt, imgClassName, containerClassName }) => {
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = () => {
+    setHasError(true);
+  };
+
+  if (hasError) {
+    // Se a imagem falhar ao carregar, renderiza uma div vazia para manter o espaço em branco.
+    return <div className={containerClassName} style={{ backgroundColor: 'white' }}></div>;
+  }
+
+  return (
+    <div className={containerClassName}>
+      <img
+        src={src}
+        alt={alt}
+        className={imgClassName}
+        onError={handleError}
+      />
+    </div>
+  );
+};
+
 const Index = () => {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -171,10 +202,11 @@ const Index = () => {
               >
                 <Card className="overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
-                    <img
+                    <ImageWithFallback
                       src={restaurant.image || '/placeholder-restaurant.png'}
                       alt={restaurant.name}
-                      className="w-full h-32 object-cover"
+                      imgClassName="w-full h-32 object-cover"
+                      containerClassName="relative w-full h-32"
                     />
                   </div>
                   <CardContent className="p-3">

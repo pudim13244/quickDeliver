@@ -1,11 +1,10 @@
-
 =================================================================================
-                            PEDINDOAPP - DOCUMENTAÇÃO
+                            QUICKDELIVER - DOCUMENTAÇÃO
 =================================================================================
 
 SOBRE O PROJETO
 ===============
-PedindoApp é um aplicativo de delivery de comida desenvolvido em React com TypeScript.
+QuickDeliver é um aplicativo de delivery de comida desenvolvido em React com TypeScript.
 O app permite aos usuários navegar por restaurantes, adicionar itens ao carrinho,
 fazer pedidos e acompanhar o status da entrega em tempo real.
 

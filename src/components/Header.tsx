@@ -10,7 +10,7 @@ interface HeaderProps {
   showCart?: boolean;
 }
 
-const Header = ({ title, showBack = false, showCart = true }: HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ title, showBack = false, showCart = true }) => {
   const navigate = useNavigate();
   const { totalItems } = useCart();
 
@@ -28,7 +28,7 @@ const Header = ({ title, showBack = false, showCart = true }: HeaderProps) => {
           </Button>
         )}
         <h1 className="text-lg font-semibold">
-          {title || 'PedindoApp'}
+          {title || 'QuickDeliver'}
         </h1>
       </div>
       

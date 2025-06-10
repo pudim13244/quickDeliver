@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { type AuthResponse, login, registerUser, type UserCredentials, type UserRegistrationData } from '@/services/dataService'; // Importar tipos e funções de autenticação
+import { type AuthResponse, login, registerUser, type UserCredentials, type UserRegistrationData, fetchUserProfile } from '@/services/dataService'; // Importar tipos e funções de autenticação
+import api from '@/services/api'; // Importa o axios customizado
 
 // Definir o tipo para o contexto de autenticação
 interface AuthContextType {
@@ -34,35 +35,71 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); // Estado para indicar se a autenticação inicial está carregando
 
-  // Efeito para carregar o token e usuário do localStorage ao iniciar a aplicação
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
-    const storedUser = localStorage.getItem('authUser');
-
-    if (storedToken && storedUser) {
+    if (storedToken) {
       setToken(storedToken);
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error('Falha ao parsear user do localStorage:', e);
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('authUser');
-      }
+      // Seta o token no axios para todas as requisições
+      api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+      // Buscar perfil do usuário no backend
+      fetchUserProfileFromToken(storedToken);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
+
+  // Função para buscar o perfil do usuário usando o token
+  const fetchUserProfileFromToken = async (storedToken: string) => {
+    try {
+      // Decodifica o token para pegar o userId (ou salve o userId no localStorage no login)
+      // Aqui, para simplificar, vamos assumir que o userId está salvo no localStorage como 'authUserId'
+      let userId = null;
+      const storedUser = localStorage.getItem('authUser');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          userId = parsed.id;
+        } catch {}
+      }
+      if (!userId) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      const userData = await fetchUserProfile(userId);
+      setUser(userData);
+    } catch (e) {
+      setUser(null);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Função de login
   const loginFn = async (credentials: UserCredentials) => {
     try {
+      console.log('Iniciando login com:', credentials.email);
       const data = await login(credentials);
+      console.log('Resposta do login:', data);
+      
+      if (!data.token || !data.user) {
+        throw new Error('Resposta de login inválida: token ou usuário ausentes');
+      }
+
       setToken(data.token);
       setUser(data.user);
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('authUser', JSON.stringify(data.user));
+      
+      // Seta o token no axios
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+      console.log('Login concluído com sucesso');
     } catch (error) {
-      console.error('Login falhou:', error);
-      // Opcional: relançar o erro para a UI lidar
+      console.error('Erro detalhado no login:', error);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
       throw error;
     }
   };

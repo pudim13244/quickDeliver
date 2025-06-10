@@ -8,6 +8,37 @@ import Header from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { fetchRestaurants, EstablishmentDetail, fetchCategories, Category } from '@/services/dataService';
 
+interface ImageWithFallbackProps {
+  src: string;
+  alt: string;
+  imgClassName: string;
+  containerClassName: string;
+}
+
+const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({ src, alt, imgClassName, containerClassName }) => {
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = () => {
+    setHasError(true);
+  };
+
+  if (hasError) {
+    // Se a imagem falhar ao carregar, renderiza uma div vazia para manter o espaço em branco.
+    return <div className={containerClassName} style={{ backgroundColor: 'white' }}></div>;
+  }
+
+  return (
+    <div className={containerClassName}>
+      <img
+        src={src}
+        alt={alt}
+        className={imgClassName}
+        onError={handleError}
+      />
+    </div>
+  );
+};
+
 const Search = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -110,10 +141,11 @@ const Search = () => {
               >
                 <Card className="overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
-                    <img
+                    <ImageWithFallback
                       src={restaurant.image || '/placeholder-restaurant.png'}
                       alt={restaurant.name}
-                      className="w-full h-32 object-cover"
+                      imgClassName="w-full h-32 object-cover"
+                      containerClassName="relative w-full h-32"
                     />
                   </div>
                   <CardContent className="p-3">

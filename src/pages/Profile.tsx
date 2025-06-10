@@ -4,17 +4,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { fetchUserProfile, updateUserProfile, type UserProfile, type UpdateUserProfileData, type UserAddress } from '@/services/dataService';
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, LogOut, Trash2, User, ChevronRight, Settings, HelpCircle, FileText, CreditCard, Star, History, Lock, MessageCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Profile() {
   const { user, isAuthenticated, loading: authLoading, logout } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editableProfile, setEditableProfile] = useState<UpdateUserProfileData>({});
@@ -97,7 +98,6 @@ export default function Profile() {
     }
   };
 
-  // Renderizar loader enquanto carrega a autenticação ou o perfil
   if (authLoading || isLoadingProfile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -106,12 +106,10 @@ export default function Profile() {
     );
   }
 
-  // Redirecionar se não autenticado (embora PrivateRoute já faça isso)
-  if (!isAuthenticated) {
-     return null; 
+  if (!isAuthenticated || !user) {
+    return null;
   }
 
-  // Renderizar erro se houver na busca do perfil
   if (isErrorProfile) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -123,9 +121,7 @@ export default function Profile() {
     );
   }
 
-  // Exibir perfil ou formulário de edição se os dados estiverem carregados
   if (profile) {
-    // Determine o endereço a ser exibido no campo de input de edição
     const currentEditableAddress = Array.isArray(editableProfile.address) 
       && editableProfile.address.length > 0
       ? (editableProfile.address.find(addr => addr.isDefault) || editableProfile.address[0]).fullAddress
@@ -133,135 +129,80 @@ export default function Profile() {
 
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header title={isEditing ? "Editar Perfil" : "Meu Perfil"} showBack showCart={false} />
-        
+        <Header title="Perfil" showBack={false} showCart={false} />
         <div className="max-w-md mx-auto px-4 py-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">{isEditing ? "Editar Informações" : "Informações do Perfil"}</CardTitle>
-              <CardDescription>{isEditing ? "Atualize seus dados abaixo." : "Visualize seus dados."}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {isEditing ? (
-                <form onSubmit={handleSave} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nome</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      value={editableProfile.name || ''}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email (Não Editável)</Label>
-                    <Input id="email" type="email" value={profile.email} disabled />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={editableProfile.phone || ''}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Endereço</Label>
-                    <Input
-                      id="address"
-                      type="text"
-                      value={currentEditableAddress} // Usa a variável criada
-                      onChange={(e) => handleInputChange('address', e.target.value)}
-                    />
-                  </div>
-                   {/* TODO: Adicionar outros campos editáveis */}
-                  <div className="flex justify-end gap-2">
-                    <Button type="button" variant="outline" onClick={() => setIsEditing(false)} disabled={isUpdatingProfile}>
-                      Cancelar
-                    </Button>
-                    <Button type="submit" disabled={isUpdatingProfile}>
-                       {isUpdatingProfile ? (
-                         <>
-                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                           Salvando...
-                         </>
-                       ) : (
-                         'Salvar Alterações'
-                       )}
-                    </Button>
-                  </div>
-                </form>
-              ) : (
-                <> {/* Visualização */}
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Nome:</p>
-                    <p className="text-gray-900">{profile.name}</p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Email:</p>
-                    <p className="text-gray-900">{profile.email}</p>
-                  </div>
-                  <Separator />
-                  {profile.phone && (
-                    <>
-                      <div>
-                        <p className="text-sm font-medium text-gray-700">Telefone:</p>
-                        <p className="text-gray-900">{profile.phone}</p>
-                      </div>
-                      <Separator />
-                    </>
-                  )}
-                  {profile.address && Array.isArray(profile.address) && profile.address.length > 0 ? (
-                    <>
-                      <div>
-                        <p className="text-sm font-medium text-gray-700">Endereço(s):</p>
-                        {profile.address.map((addr, index) => (
-                          <p key={addr.id || index} className="text-gray-900">
-                            {addr.fullAddress} {addr.isDefault && ' (Padrão)'}
-                          </p>
-                        ))}
-                      </div>
-                      <Separator />
-                    </>
-                  ) : (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Endereço:</p>
-                      <p className="text-gray-600">Nenhum endereço definido.</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Função:</p>
-                    <p className="text-gray-900">{profile.role}</p>
-                  </div>
-                  <div className="flex justify-end">
-                    <Button onClick={() => setIsEditing(true)}>
-                      Editar Perfil
-                    </Button>
-                  </div>
-                   {/* TODO: Adicionar link para histórico de pedidos */}
-                </>
-              )}
-              {/* Adicionar link para histórico de pedidos FORA DO CARD DE INFORMAÇÕES */}
-            </CardContent>
-          </Card>
-           {/* Adicionar link para histórico de pedidos FORA DO CARD DE INFORMAÇÕES */}
-             <div className="mt-4 text-center">
-                <Link to="/order-tracking" className="underline">
-                  Ver Histórico de Pedidos
-                </Link>
-              </div>
-            <div className="mt-4 text-center">
-              <Button onClick={logout} variant="destructive">
-                Sair da Conta
-              </Button>
+          <div className="flex flex-col items-center mb-6">
+            <div className="w-24 h-24 rounded-full bg-marjoriatira-100 flex items-center justify-center mb-2 border-4 border-marjoriatira-500">
+              <User className="w-16 h-16 text-marjoriatira-500" />
             </div>
+            <h2 className="text-xl font-bold text-gray-900">{user.name || 'Usuário'}</h2>
+            <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
+              <Star className="w-4 h-4" />
+              <span>0 . Membro Quick</span>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow divide-y divide-gray-100">
+            <div>
+              <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">DETALHES DA CONTA</p>
+              <ProfileItem icon={<User className="w-5 h-5" />} label="Informações Pessoais" onClick={() => navigate('/profile/edit')} />
+              <ProfileItem icon={<Star className="w-5 h-5" />} label="Recompensas" onClick={() => {}} />
+              <ProfileItem icon={<History className="w-5 h-5" />} label="Histórico de Pedidos" onClick={() => navigate('/orders')} />
+              <ProfileItem icon={<CreditCard className="w-5 h-5" />} label="Métodos de Pagamento" onClick={() => navigate('/payment-methods')} />
+            </div>
+            <div>
+              <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">CONFIGURAÇÕES</p>
+              <ProfileItem icon={<Settings className="w-5 h-5" />} label="Preferências" onClick={() => {}} />
+              <ProfileItem icon={<Lock className="w-5 h-5" />} label="Segurança" onClick={() => {}} />
+            </div>
+            <div>
+              <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">SUPORTE</p>
+              <ProfileItem icon={<HelpCircle className="w-5 h-5" />} label="FAQs" onClick={() => {}} />
+              <ProfileItem icon={<MessageCircle className="w-5 h-5" />} label="Feedback" onClick={() => {}} />
+            </div>
+            <div>
+              <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">LEGAL</p>
+              <ProfileItem icon={<FileText className="w-5 h-5" />} label="Termos de Uso" onClick={() => {}} />
+              <ProfileItem icon={<FileText className="w-5 h-5" />} label="Política de Privacidade" onClick={() => {}} />
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-2">
+            <Button
+              variant="outline"
+              className="w-full border-green-600 text-green-700 hover:bg-green-50 hover:border-green-700"
+              onClick={logout}
+            >
+              <LogOut className="w-5 h-5 mr-2" /> Sair
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full text-red-600 hover:bg-red-50"
+              onClick={() => alert('Funcionalidade de deletar conta em breve!')}
+            >
+              <Trash2 className="w-5 h-5 mr-2" /> Deletar Conta
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Fallback (não deve acontecer se loaders e erros forem tratados)
   return null;
+}
+
+function ProfileItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick?: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition group"
+    >
+      <span className="flex items-center gap-3 text-gray-800">
+        {icon}
+        <span className="text-base">{label}</span>
+      </span>
+      <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-marjoriatira-500" />
+    </button>
+  );
 } 
