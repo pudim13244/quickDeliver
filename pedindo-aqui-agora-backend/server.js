@@ -65,7 +65,8 @@ app.use(cors({
     'https://quickdeliver1.vmagenciadigital.com',
     'http://localhost:5173',
     'http://localhost:3000',
-    'http://localhost:8080'  // Adicionando a porta 8080
+    'http://localhost:8080',
+    'http://localhost:8081'  // Adicionando a porta 8081
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

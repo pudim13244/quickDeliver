@@ -11,6 +11,7 @@ import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEstablishmentDetail, fetchProductsByEstablishment, fetchOptionGroupsByProduct, EstablishmentDetail, Product, OptionGroup, Option } from '@/services/dataService';
+import Image from '@/components/ui/image';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -227,11 +228,10 @@ const Restaurant = () => {
       
       <div className="max-w-md mx-auto">
         <div className="bg-white">
-          <ImageWithFallback
+          <Image
             src={restaurant.image || '/placeholder-restaurant-banner.png'}
             alt={restaurant.name}
-            imgClassName="w-full h-48 object-cover"
-            containerClassName="w-full h-48 relative"
+            className="w-full h-48 object-cover"
           />
           <div className="p-4">
             <h1 className="text-xl font-bold text-gray-900">{restaurant.name}</h1>
@@ -283,18 +283,11 @@ const Restaurant = () => {
                           <p className="font-bold text-gray-900">R$ {item.price?.toFixed(2).replace('.', ',')}</p>
                         </div>
                         <div className="w-24 h-24 relative">
-                          {item.image_url ? (
-                            <ImageWithFallback
-                              src={item.image_url}
+                          <Image
+                            src={item.image_url || '/placeholder-restaurant-banner.png'}
                             alt={item.name}
-                              imgClassName="w-full h-full object-cover rounded-md"
-                              containerClassName="w-24 h-24 relative"
+                            className="w-full h-full object-cover rounded-md"
                           />
-                          ) : (
-                            <div className="w-24 h-24 bg-white flex items-center justify-center rounded-md">
-                              {/* Placeholder vazio se não houver imagem */}
-                            </div>
-                          )}
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button
@@ -316,11 +309,11 @@ const Restaurant = () => {
                               {selectedItem && (
                                 <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
                                   {selectedItem.image_url && (
-                                  <img
-                                       src={selectedItem.image_url}
-                                    alt={selectedItem.name}
-                                    className="w-full h-32 object-cover rounded"
-                                  />
+                                    <Image
+                                      src={selectedItem.image_url}
+                                      alt={selectedItem.name}
+                                      className="w-full h-32 object-cover rounded"
+                                    />
                                   )}
 
                                   {isLoadingOptionGroups ? (

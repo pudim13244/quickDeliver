@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { fetchCategories, fetchRestaurants, Category, EstablishmentDetail, fetchUserProfile, UserProfile } from '@/services/dataService';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from '@/components/ui/image';
 
 const categoryIcons: { [key: string]: React.ElementType } = {
   'pizzaria': Pizza,
@@ -202,11 +203,10 @@ const Index = () => {
               >
                 <Card className="overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
-                    <ImageWithFallback
+                    <Image
                       src={restaurant.image || '/placeholder-restaurant.png'}
                       alt={restaurant.name}
-                      imgClassName="w-full h-32 object-cover"
-                      containerClassName="relative w-full h-32"
+                      className="w-full h-32 object-cover"
                     />
                   </div>
                   <CardContent className="p-3">
