@@ -145,25 +145,25 @@ export default function Profile() {
           <div className="bg-white rounded-2xl shadow divide-y divide-gray-100">
             <div>
               <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">DETALHES DA CONTA</p>
-              <ProfileItem icon={<User className="w-5 h-5" />} label="Informações Pessoais" onClick={() => navigate('/profile/edit')} />
-              <ProfileItem icon={<Star className="w-5 h-5" />} label="Recompensas" onClick={() => {}} />
-              <ProfileItem icon={<History className="w-5 h-5" />} label="Histórico de Pedidos" onClick={() => navigate('/orders')} />
+              <ProfileItem icon={<User className="w-5 h-5" />} label="Informações Pessoais" onClick={() => navigate('/personal-info')} />
+              <ProfileItem icon={<Star className="w-5 h-5" />} label="Recompensas" onClick={() => navigate('/rewards')} />
+              <ProfileItem icon={<History className="w-5 h-5" />} label="Histórico de Pedidos" onClick={() => navigate('/order-history')} />
               <ProfileItem icon={<CreditCard className="w-5 h-5" />} label="Métodos de Pagamento" onClick={() => navigate('/payment-methods')} />
             </div>
             <div>
               <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">CONFIGURAÇÕES</p>
-              <ProfileItem icon={<Settings className="w-5 h-5" />} label="Preferências" onClick={() => {}} />
-              <ProfileItem icon={<Lock className="w-5 h-5" />} label="Segurança" onClick={() => {}} />
+              <ProfileItem icon={<Settings className="w-5 h-5" />} label="Preferências" onClick={() => navigate('/preferences')} />
+              <ProfileItem icon={<Lock className="w-5 h-5" />} label="Segurança" onClick={() => navigate('/security')} />
             </div>
             <div>
               <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">SUPORTE</p>
-              <ProfileItem icon={<HelpCircle className="w-5 h-5" />} label="FAQs" onClick={() => {}} />
-              <ProfileItem icon={<MessageCircle className="w-5 h-5" />} label="Feedback" onClick={() => {}} />
+              <ProfileItem icon={<HelpCircle className="w-5 h-5" />} label="FAQs" onClick={() => navigate('/faqs')} />
+              <ProfileItem icon={<MessageCircle className="w-5 h-5" />} label="Feedback" onClick={() => navigate('/feedback')} />
             </div>
             <div>
               <p className="px-6 pt-4 pb-2 text-xs font-bold text-gray-500">LEGAL</p>
-              <ProfileItem icon={<FileText className="w-5 h-5" />} label="Termos de Uso" onClick={() => {}} />
-              <ProfileItem icon={<FileText className="w-5 h-5" />} label="Política de Privacidade" onClick={() => {}} />
+              <ProfileItem icon={<FileText className="w-5 h-5" />} label="Termos de Uso" onClick={() => navigate('/terms-of-use')} />
+              <ProfileItem icon={<FileText className="w-5 h-5" />} label="Política de Privacidade" onClick={() => navigate('/privacy-policy')} />
             </div>
           </div>
 

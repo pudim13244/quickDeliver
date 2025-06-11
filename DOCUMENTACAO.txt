@@ -42,7 +42,7 @@ src/
 └── App.tsx                    # Componente principal com roteamento
 
 FUNCIONALIDADES PRINCIPAIS
-===========================
+==========================
 
 1. PÁGINA INICIAL (/)
    - Exibição de localização do usuário
@@ -221,7 +221,6 @@ O projeto pode ser deployado usando:
 - Vercel
 - Netlify
 - GitHub Pages
-- Lovable (plataforma atual)
 
 Para deploy personalizado:
 1. Build: npm run build
@@ -229,11 +228,7 @@ Para deploy personalizado:
 
 CONTATO E SUPORTE
 =================
-Este é um projeto de demonstração criado com Lovable.
-Para modificações, use a interface do Lovable ou clone o código.
-
-Documentação do Lovable: https://docs.lovable.dev/
-Comunidade Discord: https://discord.com/channels/1119885301872070706/1280461670979993613
+Para dúvidas ou sugestões, entre em contato com o desenvolvedor responsável pelo projeto.
 
 =================================================================================
                             FIM DA DOCUMENTAÇÃO

@@ -18,6 +18,16 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import PersonalInfo from "./pages/PersonalInfo";
+import Rewards from "./pages/Rewards";
+import OrderHistory from "./pages/OrderHistory";
+import PaymentMethods from "./pages/PaymentMethods";
+import Preferences from "./pages/Preferences";
+import Security from "./pages/Security";
+import FAQs from "./pages/FAQs";
+import Feedback from "./pages/Feedback";
+import TermsOfUse from "./pages/TermsOfUse";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -36,12 +46,22 @@ const App = () => (
               <Route path="/restaurant/:id" element={<Restaurant />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/personal-info" element={<PersonalInfo />} />
+                  <Route path="/rewards" element={<Rewards />} />
+                  <Route path="/order-history" element={<OrderHistory />} />
+                  <Route path="/payment-methods" element={<PaymentMethods />} />
+                  <Route path="/preferences" element={<Preferences />} />
+                  <Route path="/security" element={<Security />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/address" element={<Address />} />
               <Route path="/payment" element={<Payment />} />
               <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
                   <Route path="/order-tracking" element={<OrderTracking />} />
                 </Route>
+                <Route path="/faqs" element={<FAQs />} />
+                <Route path="/feedback" element={<Feedback />} />
+                <Route path="/terms-of-use" element={<TermsOfUse />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
               <Route path="*" element={<NotFound />} />
