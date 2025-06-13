@@ -25,8 +25,5 @@ export default defineConfig(() => ({
   build: {
     outDir: 'dist',
     sourcemap: false,
-  },
-  define: {
-    'process.env.VITE_API_URL': JSON.stringify('http://apiquick.vmagenciadigital.com'),
-  },
+  }
 }));
