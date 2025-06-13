@@ -51,13 +51,12 @@ console.log('Express JSON middleware configured.');
 console.log('Configurando CORS...');
 app.use(cors({
   origin: [
+    'http://localhost:8081',
+    'http://localhost:3000',
+    'http://localhost:5173',
     'http://vmagenciadigital.com',
     'https://vmagenciadigital.com',
     'https://quickdeliver1.vmagenciadigital.com',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:8080',
-    'http://localhost:8081'  // Adicionando a porta 8081
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

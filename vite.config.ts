@@ -9,9 +9,9 @@ export default defineConfig(() => ({
     port: 8081,
     proxy: {
       '/api': {
-        target: 'https://vmagenciadigital.com',
+        target: 'http://localhost:3000',
         changeOrigin: true,
-        secure: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
@@ -40,6 +40,6 @@ export default defineConfig(() => ({
     sourcemap: false,
   },
   define: {
-    'process.env.VITE_API_URL': JSON.stringify('https://vmagenciadigital.com/api'),
+    'process.env.VITE_API_URL': JSON.stringify('http://localhost:3000/api'),
   },
 }));

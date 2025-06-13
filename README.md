@@ -11,6 +11,62 @@ QuickDeliver é uma plataforma de pedidos online desenvolvida com React, Vite, T
 - shadcn-ui
 - Tailwind CSS
 
+## Desenvolvimento Local
+
+### Pré-requisitos
+- Node.js 18+
+- npm
+- MySQL
+
+### Configuração do Ambiente
+
+1. Clone o repositório:
+```sh
+git clone <YOUR_GIT_URL>
+cd <YOUR_PROJECT_NAME>
+```
+
+2. Instale as dependências do frontend:
+```sh
+npm install
+```
+
+3. Instale as dependências do backend:
+```sh
+cd pedindo-aqui-agora-backend
+npm install
+cd ..
+```
+
+4. Configure o banco de dados:
+- Crie um banco de dados MySQL
+- Copie o arquivo `pedindo-aqui-agora-backend/config.example.js` para `pedindo-aqui-agora-backend/config.js`
+- Atualize as configurações do banco de dados no arquivo `config.js`
+
+5. Inicie o servidor backend:
+```sh
+cd pedindo-aqui-agora-backend
+node server.js
+```
+
+6. Em outro terminal, inicie o servidor frontend:
+```sh
+npm run dev
+```
+
+O frontend estará disponível em `http://localhost:8081` (ou outra porta se a 8081 estiver em uso)
+O backend estará disponível em `http://localhost:3000`
+
+### Configuração do CORS
+O backend está configurado para aceitar requisições das seguintes origens:
+- http://localhost:8081
+- http://localhost:3000
+- http://localhost:5173
+
+### Variáveis de Ambiente
+O frontend está configurado para usar as seguintes variáveis de ambiente:
+- VITE_API_URL: http://localhost:3000/api
+
 ## Como rodar o projeto localmente?
 
 Pré-requisitos: Node.js 18+ e npm
