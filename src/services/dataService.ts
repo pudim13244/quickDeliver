@@ -1,7 +1,7 @@
 import api from './api';
 import { type CartItem } from '@/contexts/CartContext';
 
-const API_URL = process.env.VITE_API_URL || 'http://apiquick.vmagenciadigital.com';
+const API_URL = 'http://localhost:3000';
 
 // Definir interfaces baseadas na estrutura do banco de dados e uso atual
 export interface Category {
@@ -209,7 +209,7 @@ export interface ProcessPaymentResponse {
 // Função para buscar categorias
 export const fetchCategories = async (): Promise<Category[]> => {
   try {
-    const response = await api.get('/categories');
+    const response = await api.get('/api/categories');
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar categorias:', error);
@@ -220,7 +220,7 @@ export const fetchCategories = async (): Promise<Category[]> => {
 // Função para buscar restaurantes (estabelecimentos) para a lista
 export const fetchRestaurants = async (): Promise<EstablishmentDetail[]> => {
   try {
-    const response = await api.get('/establishments');
+    const response = await api.get('/api/establishments');
     return response.data.map((establishment: RawEstablishmentData) => ({
       id: establishment.id,
       name: establishment.name,
@@ -242,7 +242,7 @@ export const fetchRestaurants = async (): Promise<EstablishmentDetail[]> => {
 // Função para buscar detalhes de um estabelecimento específico
 export const fetchEstablishmentDetail = async (establishmentId: string): Promise<EstablishmentDetail> => {
   try {
-    const response = await api.get(`/establishments/${establishmentId}`);
+    const response = await api.get(`/api/establishments/${establishmentId}`);
     const establishment = response.data;
     return {
       id: establishment.id,
@@ -265,7 +265,7 @@ export const fetchEstablishmentDetail = async (establishmentId: string): Promise
 // Função para buscar produtos de um estabelecimento
 export const fetchProductsByEstablishment = async (establishmentId: string): Promise<Product[]> => {
   try {
-    const response = await api.get(`/establishments/${establishmentId}/products`);
+    const response = await api.get(`/api/establishments/${establishmentId}/products`);
     return response.data.map((product: Product) => ({
       ...product,
       price: Number(product.price),
@@ -279,7 +279,7 @@ export const fetchProductsByEstablishment = async (establishmentId: string): Pro
 // Função para buscar grupos de opções de um produto
 export const fetchOptionGroupsByProduct = async (productId: string): Promise<OptionGroup[]> => {
   try {
-    const response = await api.get(`/products/${productId}/option-groups`);
+    const response = await api.get(`/api/products/${productId}/option-groups`);
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar grupos de opções do produto:', error);
@@ -289,7 +289,7 @@ export const fetchOptionGroupsByProduct = async (productId: string): Promise<Opt
 
 // Função para buscar opções de um grupo de opções
 export const fetchOptionsByOptionGroup = async (optionGroupId: string): Promise<Option[]> => {
-  const response = await api.get<Option[]>(`option-groups/${optionGroupId}/options`);
+  const response = await api.get<Option[]>(`/api/option-groups/${optionGroupId}/options`);
   return response.data.map(option => ({
     ...option,
     additional_price: Number(option.additional_price),
@@ -299,7 +299,7 @@ export const fetchOptionsByOptionGroup = async (optionGroupId: string): Promise<
 // Funções para pagamento
 export const fetchPaymentMethods = async (): Promise<PaymentMethod[]> => {
   try {
-    const response = await api.get('/payment-methods');
+    const response = await api.get('/api/payment-methods');
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar métodos de pagamento:', error);
@@ -310,7 +310,7 @@ export const fetchPaymentMethods = async (): Promise<PaymentMethod[]> => {
 // Função para processar pagamento e criar pedido
 export const processPayment = async (orderData: CreateOrderData): Promise<ProcessPaymentResponse> => {
   try {
-    const response = await api.post('/orders', orderData);
+    const response = await api.post('/api/orders', orderData);
     return response.data;
   } catch (error) {
     console.error('Erro ao processar pagamento:', error);
@@ -321,7 +321,7 @@ export const processPayment = async (orderData: CreateOrderData): Promise<Proces
 // Função para login do usuário
 export const login = async (credentials: UserCredentials): Promise<AuthResponse> => {
   try {
-    const response = await api.post('/login', credentials);
+    const response = await api.post('/api/login', credentials);
     const { token, user } = response.data;
     localStorage.setItem('authToken', token);
     return { token, user };
@@ -334,7 +334,7 @@ export const login = async (credentials: UserCredentials): Promise<AuthResponse>
 // Nova função para cadastro de usuário
 export const registerUser = async (registrationData: UserRegistrationData): Promise<AuthResponse> => {
   try {
-    const response = await api.post('/register', registrationData);
+    const response = await api.post('/api/register', registrationData);
     const { token, user } = response.data;
     localStorage.setItem('authToken', token);
     return { token, user };
@@ -347,7 +347,7 @@ export const registerUser = async (registrationData: UserRegistrationData): Prom
 // Função para buscar pedidos de um usuário (cliente)
 export const fetchUserOrders = async (userId: string): Promise<Order[]> => {
   try {
-    const response = await api.get(`/users/${userId}/orders`);
+    const response = await api.get(`/api/users/${userId}/orders`);
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar pedidos do usuário:', error);
@@ -358,7 +358,7 @@ export const fetchUserOrders = async (userId: string): Promise<Order[]> => {
 // Função para buscar detalhes de um pedido específico
 export const fetchOrderById = async (orderId: string): Promise<Order> => {
   try {
-    const response = await api.get(`/orders/${orderId}`);
+    const response = await api.get(`/api/orders/${orderId}`);
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar pedido:', error);
@@ -369,7 +369,7 @@ export const fetchOrderById = async (orderId: string): Promise<Order> => {
 // Função para buscar o perfil do usuário por ID
 export const fetchUserProfile = async (userId: string): Promise<UserProfile> => {
   try {
-    const response = await api.get(`/users/${userId}`);
+    const response = await api.get(`/api/users/${userId}`);
     const userData = response.data;
     return {
       ...userData,
@@ -401,7 +401,7 @@ export const updateUserProfile = async (userId: string, profileData: UpdateUserP
     }
   }
 
-  const response = await api.put<RawUserProfile>(`users/${userId}`, dataToSend);
+  const response = await api.put<RawUserProfile>(`/api/users/${userId}`, dataToSend);
   const updatedRawProfile = response.data;
 
   const updatedProfile: UserProfile = {
@@ -443,7 +443,7 @@ export const updateUserProfile = async (userId: string, profileData: UpdateUserP
 // Nova função para submeter a avaliação de um pedido
 export const submitOrderRating = async (orderId: string, ratingData: OrderRatingData): Promise<void> => {
   try {
-    await api.post(`/orders/${orderId}/rating`, ratingData);
+    await api.post(`/api/orders/${orderId}/rating`, ratingData);
   } catch (error) {
     console.error('Erro ao enviar avaliação do pedido:', error);
     throw error;

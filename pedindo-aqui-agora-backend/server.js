@@ -8,27 +8,18 @@ console.log('Criando instância do express...');
 const app = express();
 console.log('Instância do express criada com sucesso.');
 
-// Carrega as variáveis de ambiente do arquivo .env
-console.log('Iniciando carregamento do dotenv...');
-try {
-  require('dotenv').config();
-  console.log('dotenv carregado com sucesso.');
-  
-  // Verificar se as variáveis de ambiente necessárias estão definidas
-  console.log('Verificando variáveis de ambiente...');
-  const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'JWT_SECRET'];
-  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-  
-  if (missingVars.length > 0) {
-    console.error('Variáveis de ambiente ausentes:', missingVars);
-    process.exit(1);
-  }
-  
-  console.log('Todas as variáveis de ambiente necessárias estão definidas.');
-} catch (error) {
-  console.error('Erro ao carregar dotenv:', error);
-  process.exit(1);
-}
+// Carrega as configurações
+console.log('Carregando configurações...');
+const config = require('./config');
+console.log('Configurações carregadas com sucesso.');
+
+// Configura as variáveis de ambiente
+process.env.DB_HOST = config.DB_HOST;
+process.env.DB_USER = config.DB_USER;
+process.env.DB_PASSWORD = config.DB_PASSWORD;
+process.env.DB_NAME = config.DB_NAME;
+process.env.JWT_SECRET = config.JWT_SECRET;
+process.env.PORT = config.PORT;
 
 console.log('Server.js starting...');
 
@@ -48,7 +39,7 @@ console.log('Importando jsonwebtoken...');
 const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
 console.log('jsonwebtoken importado com sucesso.');
 
-const PORT = process.env.PORT || 8080; // Alterando a porta padrão para 8080
+const PORT = 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; // Chave secreta para JWT (MUDAR EM PRODUÇÃO!)
 
 // Middleware para analisar o corpo das requisições como JSON
@@ -93,13 +84,33 @@ console.log('Database pool created.');
 
 // Testar a conexão com o banco de dados
 console.log('Testando conexão com o banco de dados...');
+const util = require('util');
 pool.getConnection()
   .then(connection => {
     console.log('Conectado ao banco de dados MySQL!');
     connection.release(); // Libera a conexão
   })
   .catch(err => {
-    console.error('Erro ao conectar ao banco de dados:', err.message);
+    console.error('Erro ao conectar ao banco de dados:', err);
+    try {
+      console.error('Erro detalhado (JSON):', JSON.stringify(err, null, 2));
+    } catch (jsonErr) {
+      console.error('Não foi possível converter o erro para JSON:', jsonErr);
+    }
+    if (err && typeof err === 'object') {
+      console.error('Propriedades do erro:');
+      for (const key in err) {
+        if (Object.prototype.hasOwnProperty.call(err, key)) {
+          console.error(`${key}:`, err[key]);
+        }
+      }
+    }
+    // Log extra usando util.inspect
+    try {
+      console.error('Erro detalhado (util.inspect):', util.inspect(err, { showHidden: false, depth: null }));
+    } catch (inspectErr) {
+      console.error('Não foi possível usar util.inspect:', inspectErr);
+    }
   });
 
 // Rota de teste
@@ -780,10 +791,67 @@ app.get('/api/users/:id', authenticateToken, async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
-    res.json(rows[0]);
+    let user = rows[0];
+    // Tenta converter address para objeto, se for um JSON válido
+    if (user.address && typeof user.address === 'string') {
+      try {
+        const parsed = JSON.parse(user.address);
+        user.address = parsed;
+      } catch (e) {
+        // Se não for JSON válido, mantém como string
+      }
+    }
+    res.json(user);
   } catch (err) {
     console.error('Erro ao buscar perfil do usuário:', err.message);
     res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+});
+
+// Rota para atualizar o perfil do usuário
+app.put('/api/users/:id', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    // Garante que o usuário logado só pode editar o próprio perfil
+    if (req.user.userId.toString() !== userId) {
+      return res.status(403).json({ message: 'Acesso não autorizado para editar este usuário.' });
+    }
+    const { name, phone, address } = req.body;
+    // Atualiza apenas os campos enviados
+    const fields = [];
+    const values = [];
+    if (name !== undefined) {
+      fields.push('name = ?');
+      values.push(name);
+    }
+    if (phone !== undefined) {
+      fields.push('phone = ?');
+      values.push(phone);
+    }
+    if (address !== undefined) {
+      let addressToSave = address;
+      if (typeof address === 'object') {
+        try {
+          addressToSave = JSON.stringify(address);
+        } catch (e) {
+          addressToSave = '';
+        }
+      }
+      fields.push('address = ?');
+      values.push(addressToSave);
+    }
+    if (fields.length === 0) {
+      return res.status(400).json({ message: 'Nenhum campo para atualizar.' });
+    }
+    values.push(userId);
+    const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+    await pool.query(sql, values);
+    // Retorna o novo perfil atualizado
+    const [rows] = await pool.query('SELECT id, name, email, phone, address, role FROM users WHERE id = ?', [userId]);
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Erro ao atualizar perfil do usuário:', err.message);
+    res.status(500).json({ message: 'Erro interno do servidor ao atualizar perfil.' });
   }
 });
 
